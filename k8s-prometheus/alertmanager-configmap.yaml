@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: ops
+data:
+  alertmanager.yml: |
+    global: 
+      resolve_timeout: 5m
+      smtp_smarthost: 'smtp.163.com:25'
+      smtp_from: 'test@163.com'
+      smtp_auth_username: 'test@163.com'
+      smtp_auth_password: 'FMJIOBTDAZWGRIFL'
+
+    templates:
+      - '/etc/config/template/email.tmpl'
+
+    receivers:
+    - name: default-receiver
+      email_configs:
+      - to: "974907350@qq.com"
+        html: '{{ template "email.html" . }}'
+        headers: { Subject: "[WARN] Prometheus 告警邮件" }
+
+    route:
+      group_interval: 1m
+      group_wait: 10s
+      receiver: default-receiver
+      repeat_interval: 1m
